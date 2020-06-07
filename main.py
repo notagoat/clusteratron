@@ -7,6 +7,8 @@ port = "8080"
 namespacenames = []
 deploymentimages = []
 deploymentnames = []
+updatetimes = []
+
 
 print("Connecting to Kubernetes Cluster: %s:%s" %(host, port))
 
@@ -35,7 +37,23 @@ for name in namespacenames:
 			for image in images:
 				deploymentimages.append(image["image"])
 				deploymentnames.append(image["name"])
+		#Finally, Get last update. Check all historical events for each pod, then for those that have event, record time.
+		for deployment in deployments:
+			operation = deployment["metadata"]["managedFields"][0]["operation"]
+			if operation == "Update":
+				updatetimes.append(deployment["metadata"]["managedFields"][0]["time"])
+			else:
+				updatetimes.append("NA")
+
+
 i = 0
 while i != len(deploymentimages):
-	print("Name: %s \t Image: %s"%(deploymentnames[i],deploymentimages[i]))
+	print("Name: %s \t Image: %s \t Last Update Time: %s"%(deploymentnames[i],deploymentimages[i],updatetimes[i]))
 	i += 1
+
+#TODO: Improve Printing
+#TODO: Make sure data stays related (EG if one deployment image detail is missing)
+#TODO: Add checking for last update by checking operations then comparing dates
+#TODO: Add checks for failed requests (401, bad data, exceptions with network, etc)
+#TODO: Add thruple class
+#TODO: kube-controller-manager vs kubelet
