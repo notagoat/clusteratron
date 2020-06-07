@@ -8,7 +8,7 @@ namespacenames = []
 deploymentimages = []
 deploymentnames = []
 updatetimes = []
-
+titles = ["Name", "Image", "Last Update"]
 
 print("Connecting to Kubernetes Cluster: %s:%s" %(host, port))
 
@@ -46,14 +46,17 @@ for name in namespacenames:
 				updatetimes.append("NA")
 
 
-i = 0
-while i != len(deploymentimages):
-	print("Name: %s \t Image: %s \t Last Update Time: %s"%(deploymentnames[i],deploymentimages[i],updatetimes[i]))
-	i += 1
+content = [titles] + list(zip(deploymentnames, deploymentimages, updatetimes))
+#content is a three set tuple for printing data. It could be useful to create one of these at the start to store data but that would require moving code around a lot.
 
-#TODO: Improve Printing
+for i, c in enumerate(content):
+	line = '|'.join(str(x).ljust(40) for x in c) #Might be cool to find the longest data for each section then add them?
+	print(line)
+	if i == 0:
+		print('-' * len(line))
+
+
+#TODO: Improve Printing. DONE!
 #TODO: Make sure data stays related (EG if one deployment image detail is missing)
-#TODO: Add checking for last update by checking operations then comparing dates
 #TODO: Add checks for failed requests (401, bad data, exceptions with network, etc)
-#TODO: Add thruple class
 #TODO: kube-controller-manager vs kubelet
