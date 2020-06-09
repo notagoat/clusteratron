@@ -1,8 +1,16 @@
 #run this before to connect microk8s kubectl proxy --port=8080 &
 import requests, json
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("host", help="The host of the kubernetes cluster")
+parser.add_argument("port", help="The port of the kubernetes cluster")
+parser.add_argument("--namespace", help="The namespace to search for. Use this to find deployments for a specific namespace.")
 
-host = 'localhost'
-port = "8080"
+args = parser.parse_args()
+print(args.host)
+
+host = args.host
+port = args.port
 
 namespacenames = []
 deploymentimages = []
@@ -19,10 +27,19 @@ namespaces = response.json()
 #print(json.dumps(namespaces, indent=2))
 namespaces = namespaces["items"]
 
-#Get names of all running namespaces TODO: Add command line to pick only one namespace
 for namespace in namespaces:
 	name = namespace["metadata"]["name"]
-	namespacenames.append(name)
+	if args.namespace:
+		if name == args.namespace:
+			namespacenames.append(name)
+		else:
+			pass
+	else:
+		namespacenames.append(name)
+
+if not namespacenames:
+	print("No namespace found with the name %s. Quitting program!"%(args.namespace))
+	exit(1)
 
 #Now iterate through namespaces to get pods
 for name in namespacenames:
