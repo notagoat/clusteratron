@@ -7,7 +7,6 @@ parser.add_argument("port", help="The port of the kubernetes cluster")
 parser.add_argument("--namespace", help="The namespace to search for. Use this to find deployments for a specific namespace.")
 
 args = parser.parse_args()
-print(args.host)
 
 host = args.host
 port = args.port
